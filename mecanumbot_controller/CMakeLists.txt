@@ -42,6 +42,7 @@ ament_target_dependencies(
   pluginlib
   rclcpp
   rclcpp_lifecycle
+  realtime_tools
 )
 
 pluginlib_export_plugin_description_file(controller_interface mecanumbot_controller.xml)
