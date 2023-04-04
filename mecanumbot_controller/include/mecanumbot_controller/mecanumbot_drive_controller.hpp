@@ -63,14 +63,10 @@ namespace debict
             protected:
                 rclcpp::Subscription<Twist>::SharedPtr velocity_command_subsciption_;
                 realtime_tools::RealtimeBuffer<std::shared_ptr<Twist>> velocity_command_ptr_;
-                std::shared_ptr<MecanumbotWheel> fl_wheel_;
-                std::shared_ptr<MecanumbotWheel> fr_wheel_;
-                std::shared_ptr<MecanumbotWheel> rl_wheel_;
-                std::shared_ptr<MecanumbotWheel> rr_wheel_;
-                std::string fl_wheel_joint_name_;
-                std::string fr_wheel_joint_name_;
-                std::string rl_wheel_joint_name_;
-                std::string rr_wheel_joint_name_;
+                std::shared_ptr<MecanumbotWheel> r_wheel_;
+                std::shared_ptr<MecanumbotWheel> l_wheel_;
+                std::string r_wheel_joint_name_;
+                std::string l_wheel_joint_name_;
                 double linear_scale_;
                 double radial_scale_;
                 double wheel_radius_;

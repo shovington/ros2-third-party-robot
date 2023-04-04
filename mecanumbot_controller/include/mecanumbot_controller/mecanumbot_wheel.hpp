@@ -15,7 +15,6 @@ namespace debict
             {
             public:
                 MecanumbotWheel(
-                    std::reference_wrapper<const hardware_interface::LoanedStateInterface> position_state,
                     std::reference_wrapper<const hardware_interface::LoanedStateInterface> velocity_state,
                     std::reference_wrapper<hardware_interface::LoanedCommandInterface> velocity_command
                     );
@@ -23,7 +22,6 @@ namespace debict
                 void set_velocity(double value);
 
             private:
-                std::reference_wrapper<const hardware_interface::LoanedStateInterface> position_state_;
                 std::reference_wrapper<const hardware_interface::LoanedStateInterface> velocity_state_;
                 std::reference_wrapper<hardware_interface::LoanedCommandInterface> velocity_command_;
 

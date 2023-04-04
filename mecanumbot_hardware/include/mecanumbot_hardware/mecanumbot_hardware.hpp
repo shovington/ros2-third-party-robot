@@ -65,7 +65,6 @@ namespace debict
 
             private:
                 std::vector<uint8_t> motor_ids_;
-                std::vector<double> position_states_;
                 std::vector<double> velocity_states_;
                 std::vector<double> velocity_commands_;
                 std::vector<double> velocity_commands_saved_;

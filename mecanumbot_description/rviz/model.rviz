@@ -67,22 +67,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        fl_wheel_link:
+        r_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        fr_wheel_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        rl_wheel_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        rr_wheel_link:
+        l_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -101,13 +91,9 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
-        fl_wheel_link:
+        r_wheel_link:
           Value: true
-        fr_wheel_link:
-          Value: true
-        rl_wheel_link:
-          Value: true
-        rr_wheel_link:
+        l_wheel_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -117,13 +103,9 @@ Visualization Manager:
       Tree:
         base_footprint:
           base_link:
-            fl_wheel_link:
+            r_wheel_link:
               {}
-            fr_wheel_link:
-              {}
-            rl_wheel_link:
-              {}
-            rr_wheel_link:
+            l_wheel_link:
               {}
       Update Interval: 0
       Value: true

@@ -25,10 +25,8 @@ controller_interface::InterfaceConfiguration MecanumbotDriveController::command_
     controller_interface::InterfaceConfiguration command_interfaces_config;
     command_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-    command_interfaces_config.names.push_back(fl_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
-    command_interfaces_config.names.push_back(fr_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
-    command_interfaces_config.names.push_back(rl_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
-    command_interfaces_config.names.push_back(rr_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
+    command_interfaces_config.names.push_back(r_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
+    command_interfaces_config.names.push_back(l_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
 
     return command_interfaces_config;
 }
@@ -38,14 +36,8 @@ controller_interface::InterfaceConfiguration MecanumbotDriveController::state_in
     controller_interface::InterfaceConfiguration state_interfaces_config;
     state_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-    state_interfaces_config.names.push_back(fl_wheel_joint_name_ + "/" + hardware_interface::HW_IF_POSITION);
-    state_interfaces_config.names.push_back(fl_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
-    state_interfaces_config.names.push_back(fr_wheel_joint_name_ + "/" + hardware_interface::HW_IF_POSITION);
-    state_interfaces_config.names.push_back(fr_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
-    state_interfaces_config.names.push_back(rl_wheel_joint_name_ + "/" + hardware_interface::HW_IF_POSITION);
-    state_interfaces_config.names.push_back(rl_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
-    state_interfaces_config.names.push_back(rr_wheel_joint_name_ + "/" + hardware_interface::HW_IF_POSITION);
-    state_interfaces_config.names.push_back(rr_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
+    state_interfaces_config.names.push_back(r_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
+    state_interfaces_config.names.push_back(l_wheel_joint_name_ + "/" + hardware_interface::HW_IF_VELOCITY);
 
     return state_interfaces_config;
 }
@@ -54,13 +46,6 @@ controller_interface::CallbackReturn MecanumbotDriveController::on_init()
 {
     try {
         auto node = get_node();
-        //node->declare_parameter<std::string>("fl_wheel_joint_name", "");
-        //node->declare_parameter<std::string>("fr_wheel_joint_name", "");
-        //node->declare_parameter<std::string>("rl_wheel_joint_name", "");
-        //node->declare_parameter<std::string>("rr_wheel_joint_name", "");
-        //node->declare_parameter<double>("wheel_radius", 0.0);
-        //node->declare_parameter<double>("wheel_distance.width", 0.0);
-        //node->declare_parameter<double>("wheel_distance.length", 0.0);
         
     }
     catch (const std::exception & e) {
@@ -78,20 +63,19 @@ controller_interface::return_type MecanumbotDriveController::update(const rclcpp
     if (!velocity_command || !(*velocity_command)) {
         return controller_interface::return_type::OK;
     }
+    // std::cout << "velocity_command angular z: " << (*velocity_command)->twist.angular.z << std::endl;
 
     // Calculate the wheel velocity
     // See: http://robotsforroboticists.com/drive-kinematics/
     const auto twist = (*velocity_command)->twist;
-    double fl_wheel_velocity = (1 / wheel_radius_) * (twist.linear.x - twist.linear.y - (wheel_separation_width_ + wheel_separation_length_) * twist.angular.z);
-    double fr_wheel_velocity = (1 / wheel_radius_) * (twist.linear.x + twist.linear.y + (wheel_separation_width_ + wheel_separation_length_) * twist.angular.z);
-    double rl_wheel_velocity = (1 / wheel_radius_) * (twist.linear.x + twist.linear.y - (wheel_separation_width_ + wheel_separation_length_) * twist.angular.z);
-    double rr_wheel_velocity = (1 / wheel_radius_) * (twist.linear.x - twist.linear.y + (wheel_separation_width_ + wheel_separation_length_) * twist.angular.z);
+    double r_wheel_velocity = (1 / wheel_radius_) * (twist.linear.x + twist.linear.y - (wheel_separation_width_ + wheel_separation_length_) * twist.angular.z);
+    double l_wheel_velocity = (1 / wheel_radius_) * (twist.linear.x - twist.linear.y + (wheel_separation_width_ + wheel_separation_length_) * twist.angular.z);
 
-    fl_wheel_->set_velocity(fl_wheel_velocity);
-    fr_wheel_->set_velocity(fr_wheel_velocity);
-    rl_wheel_->set_velocity(rl_wheel_velocity);
-    rr_wheel_->set_velocity(rr_wheel_velocity);
-
+    r_wheel_->set_velocity(r_wheel_velocity);
+    l_wheel_->set_velocity(l_wheel_velocity);
+    std::cout << "r_wheel_velocity: " << r_wheel_velocity << std::endl;
+    std::cout << "l_wheel_velocity: " << l_wheel_velocity << std::endl;
+    std::cout << "period: " << period.seconds() << std::endl;
     return controller_interface::return_type::OK;
 }
 
@@ -99,24 +83,14 @@ controller_interface::CallbackReturn MecanumbotDriveController::on_configure(con
 {
     RCLCPP_INFO(get_node()->get_logger(), "Configure MecanumbotDriverController");
 
-    fl_wheel_joint_name_ = get_node()->get_parameter("fl_wheel_joint_name").as_string();
-    fr_wheel_joint_name_ = get_node()->get_parameter("fr_wheel_joint_name").as_string();
-    rl_wheel_joint_name_ = get_node()->get_parameter("rl_wheel_joint_name").as_string();
-    rr_wheel_joint_name_ = get_node()->get_parameter("rr_wheel_joint_name").as_string();
-    if (fl_wheel_joint_name_.empty()) {
-        RCLCPP_ERROR(get_node()->get_logger(), "'fl_wheel_joint_name' parameter was empty");
+    r_wheel_joint_name_ = get_node()->get_parameter("r_wheel_joint_name").as_string();
+    l_wheel_joint_name_ = get_node()->get_parameter("l_wheel_joint_name").as_string();
+    if (r_wheel_joint_name_.empty()) {
+        RCLCPP_ERROR(get_node()->get_logger(), "'r_wheel_joint_name' parameter was empty");
         return controller_interface::CallbackReturn::ERROR;
     }
-    if (fr_wheel_joint_name_.empty()) {
-        RCLCPP_ERROR(get_node()->get_logger(), "'fr_wheel_joint_name' parameter was empty");
-        return controller_interface::CallbackReturn::ERROR;
-    }
-    if (rl_wheel_joint_name_.empty()) {
-        RCLCPP_ERROR(get_node()->get_logger(), "'rl_wheel_joint_name' parameter was empty");
-        return controller_interface::CallbackReturn::ERROR;
-    }
-    if (rr_wheel_joint_name_.empty()) {
-        RCLCPP_ERROR(get_node()->get_logger(), "'rr_wheel_joint_name' parameter was empty");
+    if (l_wheel_joint_name_.empty()) {
+        RCLCPP_ERROR(get_node()->get_logger(), "'l_wheel_joint_name' parameter was empty");
         return controller_interface::CallbackReturn::ERROR;
     }
 
@@ -149,11 +123,9 @@ controller_interface::CallbackReturn MecanumbotDriveController::on_configure(con
 controller_interface::CallbackReturn MecanumbotDriveController::on_activate(const rclcpp_lifecycle::State &)
 {
     // Initialize the wheels
-    fl_wheel_ = get_wheel(fl_wheel_joint_name_);
-    fr_wheel_ = get_wheel(fr_wheel_joint_name_);
-    rl_wheel_ = get_wheel(rl_wheel_joint_name_);
-    rr_wheel_ = get_wheel(rr_wheel_joint_name_);
-    if (!fl_wheel_ || !fr_wheel_ || !rl_wheel_ || !rr_wheel_) {
+    r_wheel_ = get_wheel(r_wheel_joint_name_);
+    l_wheel_ = get_wheel(l_wheel_joint_name_);
+    if (!r_wheel_ || !l_wheel_) {
         return controller_interface::CallbackReturn::ERROR;
     }
     
@@ -168,10 +140,8 @@ controller_interface::CallbackReturn MecanumbotDriveController::on_deactivate(co
 controller_interface::CallbackReturn MecanumbotDriveController::on_cleanup(const rclcpp_lifecycle::State &)
 {
     // Uninitialize the wheels
-    fl_wheel_.reset();
-    fr_wheel_.reset();
-    rl_wheel_.reset();
-    rr_wheel_.reset();
+    r_wheel_.reset();
+    l_wheel_.reset();
 
     return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -188,20 +158,10 @@ controller_interface::CallbackReturn MecanumbotDriveController::on_shutdown(cons
 
 std::shared_ptr<MecanumbotWheel> MecanumbotDriveController::get_wheel(const std::string & wheel_joint_name)
 {
-    // Lookup the position state interface
-    const auto position_state = std::find_if(state_interfaces_.cbegin(), state_interfaces_.cend(), [&wheel_joint_name](const hardware_interface::LoanedStateInterface & interface)
-    {
-        return interface.get_name() == wheel_joint_name && interface.get_interface_name() == hardware_interface::HW_IF_POSITION;
-    });
-    if (position_state == state_interfaces_.cend()) {
-        RCLCPP_ERROR(get_node()->get_logger(), "%s position state interface not found", wheel_joint_name.c_str());
-        return nullptr;
-    }
-
     // Lookup the velocity state interface
     const auto velocity_state = std::find_if(state_interfaces_.cbegin(), state_interfaces_.cend(), [&wheel_joint_name](const hardware_interface::LoanedStateInterface & interface)
     {
-        return interface.get_name() == wheel_joint_name && interface.get_interface_name() == hardware_interface::HW_IF_VELOCITY;
+        return interface.get_interface_name() == hardware_interface::HW_IF_VELOCITY;
     });
     if (velocity_state == state_interfaces_.cend()) {
         RCLCPP_ERROR(get_node()->get_logger(), "%s velocity state interface not found", wheel_joint_name.c_str());
@@ -211,7 +171,8 @@ std::shared_ptr<MecanumbotWheel> MecanumbotDriveController::get_wheel(const std:
     // Lookup the velocity command interface
     const auto velocity_command = std::find_if(command_interfaces_.begin(), command_interfaces_.end(), [&wheel_joint_name](const hardware_interface::LoanedCommandInterface & interface)
     {
-        return interface.get_name() == wheel_joint_name && interface.get_interface_name() == hardware_interface::HW_IF_VELOCITY;
+        std::cout << "interface.get_name(): " << interface.get_name() << std::endl;
+        return interface.get_name() == wheel_joint_name+"/velocity" && interface.get_interface_name() == hardware_interface::HW_IF_VELOCITY;
     });
     if (velocity_command == command_interfaces_.end()) {
         RCLCPP_ERROR(get_node()->get_logger(), "%s velocity command interface not found", wheel_joint_name.c_str());
@@ -220,7 +181,6 @@ std::shared_ptr<MecanumbotWheel> MecanumbotDriveController::get_wheel(const std:
 
     // Create the wheel instance
     return std::make_shared<MecanumbotWheel>(
-        std::ref(*position_state),
         std::ref(*velocity_state),
         std::ref(*velocity_command)
         );

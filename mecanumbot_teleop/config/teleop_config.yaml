@@ -5,15 +5,15 @@ teleop:
     move:
       forward:
         axis: 1
-        scale: 3.5
+        scale: 1.0
         deadzone: 0.0
       reverse:
         axis: 1
-        scale: 3.5
+        scale: 1.0
         deadzone: 0.0
       left:
         axis: 0
-        scale: 3.5
+        scale: 1.0
         deadzone: 0.0
       right:
         axis: 0
@@ -21,18 +21,19 @@ teleop:
         deadzone: 0.0
     turn:
       left:
-        axis: 5
-        scale: 10.0
+        axis: 2
+        scale: -1.0
         deadzone: 0.0
         offset: 1.0
       right:
-        axis: 4
-        scale: -10.0
+        axis: 5
+        scale: 1.0
         deadzone: 0.0
         offset: 1.0
 
 joystick:
   ros__parameters:
     joy_topic: /joy
-    dev: /dev/input/js0
-    deadzone: 0.2
+    dev: /dev/input/js1
+    deadzone: 0.1
+    autorepeat_rate: 20
