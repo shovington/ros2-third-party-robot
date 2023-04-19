@@ -49,7 +49,7 @@ return_type MecanumbotSerialPort::open(const std::string & port_name)
     }
 
     memset(&tty_config, 0, sizeof(termios));
-    tty_config.c_cflag = B9600 | CRTSCTS | CS8 | CLOCAL | CREAD;
+    tty_config.c_cflag = B115200 | CRTSCTS | CS8 | CLOCAL | CREAD;
     tty_config.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
     tty_config.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
     tty_config.c_cflag &= ~CSIZE;    // Clear bits per byte
@@ -87,18 +87,35 @@ return_type MecanumbotSerialPort::close()
     return return_type::SUCCESS;
 }
 
-return_type MecanumbotSerialPort::read_frames(std::vector<SerialHdlcFrame>& frames)
+return_type MecanumbotSerialPort::read_frames(std::string data)
 {
-    // Read data from the serial port
-    const ssize_t num_bytes = ::read(serial_port_, rx_buffer_, 256);
-    if (num_bytes == -1) {
-        fprintf(stderr, "Failed to read serial port data: %s (%d)\n", strerror(errno), errno);
-        return return_type::ERROR;
-    }
+    char buffer[1024];
+    int buffer_index = 0;
+    char last_char = NULL;
+    ssize_t length = 0;
+    
+    while(last_char != '\n')
+    {
+        char buffer_[1024];
+        ssize_t length = read(serial_port_, &buffer_, sizeof(buffer_));
+        if (length == -1)
+        {
+            printf("Error reading from serial port\n");
+            break;
+        }
 
-    for (ssize_t i = 0; i < num_bytes; i++) {
-        decode_byte(rx_buffer_[i], frames);
+        for (int i = 0; i < length; i++)
+        {
+            buffer[buffer_index] = buffer_[i];
+            buffer_index++;
+        }
+
+        last_char = buffer[buffer_index - 1];
+
     }
+    printf("Global Buffer read %d bytes\n", buffer_index-1);
+    printf("%s\n", buffer); 
+
 
     return return_type::SUCCESS;
 }

@@ -136,19 +136,17 @@ hardware_interface::return_type MecanumbotHardware::read(const rclcpp::Time & ti
     // We currently have an ack response, so read the frames
     std::vector<SerialHdlcFrame> frames;
     serial_port_->read_frames(frames);
-    // print frames
-    // std::cout << "Frames received: " << frames.size() << std::endl;
-    /*
-    for (size_t i = 0; i < frames.size(); i++) {
-        char buff[100];
-        int offset = 0;
-        for (size_t l = 0; l < frames[i].length; l++) {
-            sprintf(&buff[offset], "%02X ", frames[i].data[l]);
-            offset += 3;
-        }
-        RCLCPP_INFO(rclcpp::get_logger("MecanumbotHardware"), "Frame received: %s", buff);
-    }
-    */
+    
+    // for (size_t i = 0; i < frames.size(); i++) {
+    //     char buff[100];
+    //     int offset = 0;
+    //     for (size_t l = 0; l < frames[i].length; l++) {
+    //         sprintf(&buff[offset], "%02X ", frames[i].data[l]);
+    //         offset += 3;
+    //     }
+    //     // RCLCPP_INFO(rclcpp::get_logger("MecanumbotHardware"), "Frame received: %s", buff);
+    // }
+    
 
     for (size_t i = 0; i < info_.joints.size(); i++) {
         // RCLCPP_INFO(rclcpp::get_logger("MecanumbotHardware"), "Got position %.5f, velocity %.5f for joint %d!", velocity_states_[i], i);
@@ -159,8 +157,6 @@ hardware_interface::return_type MecanumbotHardware::read(const rclcpp::Time & ti
 
 hardware_interface::return_type MecanumbotHardware::write(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
-    std::cout << "command size: " << velocity_commands_.size() << std::endl;
-    std::cout << "Velocity commands received: " << velocity_commands_[0] << ", " << velocity_commands_[1] << std::endl;
     for (size_t i = 0; i < info_.joints.size(); i++) {
         // Only send motor commands if the velocity changed
         if (velocity_commands_[i] != velocity_commands_saved_[i]) {
