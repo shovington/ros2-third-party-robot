@@ -160,14 +160,11 @@ hardware_interface::return_type MecanumbotHardware::read(const rclcpp::Time & ti
 
 hardware_interface::return_type MecanumbotHardware::write(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
-    bool new_command = false;
 
     for (size_t i = 0; i < info_.joints.size(); i++) {
         // Only send motor commands if the velocity changed
         if (velocity_commands_[i] != velocity_commands_saved_[i]) {
 
-            RCLCPP_INFO(rclcpp::get_logger("MecanumbotHardware"), "Motor velocity changed: %.5f", velocity_commands_[i]);
-            new_command = true;
             // Create the motor command message as a JSON string 
             std::string message = "{\"right\":" + std::to_string(velocity_commands_[0]) + 
                                     ",\"left\":" + std::to_string(velocity_commands_[1])+ "}";
@@ -178,7 +175,6 @@ hardware_interface::return_type MecanumbotHardware::write(const rclcpp::Time & t
             char message_char[message.length() + 1];
             strcpy(message_char, message.c_str());
             message[message.length()] = '\0';
-            std::cout << "Message written: " << message << std::endl;
             
             // Send the motor command
             serial_port_->write_frame(message_char);

@@ -39,13 +39,13 @@ def generate_launch_description():
             )
         ),
 
-        Node(
-            package='mecanumbot_control',
-            executable='mecanumbot_control_node',
-            output='screen',
-            parameters=[
-                {'robot_description': robot_description},
-                robot_controller_config
-            ]
-        )
+        # Node(
+        #     package='mecanumbot_control',
+        #     executable='mecanumbot_control_node',
+        #     output='screen',
+        #     parameters=[
+        #         {'robot_description': robot_description},
+        #         robot_controller_config
+        #     ]
+        # )
     ])

@@ -63,7 +63,9 @@ controller_interface::return_type MecanumbotDriveController::update(const rclcpp
     if (!velocity_command || !(*velocity_command)) {
         return controller_interface::return_type::OK;
     }
-    // std::cout << "velocity_command angular z: " << (*velocity_command)->twist.angular.z << std::endl;
+    std::cout << "velocity_command angular z: " << (*velocity_command)->twist.angular.z << std::endl;
+    std::cout << "velocity_command linear x: " << (*velocity_command)->twist.linear.x << std::endl;
+    std::cout << "velocity_command linear y: " << (*velocity_command)->twist.linear.y << std::endl;
 
     // Calculate the wheel velocity
     // See: http://robotsforroboticists.com/drive-kinematics/

@@ -6,15 +6,24 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    teleop_config = os.path.join(get_package_share_directory('mecanumbot_teleop'), 'config', 'teleop_config.yaml')
+    joy_params = os.path.join(get_package_share_directory('mecanumbot_bringup'),'config','joystick.yaml')
+    teleop_params = os.path.join(get_package_share_directory('mecanumbot_bringup'),'config','teleop.yaml')
+
+    joy_node = Node(
+            package='joy',
+            executable='joy_node',
+            parameters=[joy_params],
+         )
+    
+    teleop_node = Node(
+            package='teleop_twist_joy', 
+            executable='teleop_node',
+            name = 'teleop_node',
+            parameters=[teleop_params],
+            # remappings=[('/cmd_vel', '/diff_cont/cmd_vel_unstamped')]
+            )
 
     return LaunchDescription([
-        Node(
-            package='mecanumbot_teleop',
-            executable='mecanumbot_teleop',
-            output='screen',
-            parameters=[
-                teleop_config
-            ]
-        )
+        joy_node,
+        teleop_node     
     ])
