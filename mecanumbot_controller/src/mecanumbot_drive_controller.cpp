@@ -73,7 +73,6 @@ controller_interface::return_type MecanumbotDriveController::update(const rclcpp
 
     r_wheel_->set_velocity(r_wheel_velocity);
     l_wheel_->set_velocity(l_wheel_velocity);
-    std::cout << "period: " << period.seconds() << std::endl;
     return controller_interface::return_type::OK;
 }
 

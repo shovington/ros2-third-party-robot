@@ -35,7 +35,7 @@ namespace debict
                 return_type open(const std::string & port_name);
                 return_type close();
                 return_type read_frames(char* data);
-                return_type write_frame(const uint8_t* data, size_t size);
+                return_type write_frame(char* data);
                 bool is_open() const;
 
             protected:

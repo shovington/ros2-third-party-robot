@@ -119,30 +119,17 @@ return_type MecanumbotSerialPort::read_frames(char* buffer)
 
     // remrove carriage return and line feed
     buffer[buffer_index - 2] = '\0';
+    std::cout << "buffer: " << buffer << std::endl;
     return return_type::SUCCESS;
 }
 
-return_type MecanumbotSerialPort::write_frame(const uint8_t* data, size_t size)
+return_type MecanumbotSerialPort::write_frame(char* data)
 {
-    if (!is_open()) {
-        return return_type::ERROR;
-    }
-    
-    // Generate the fame
-    tx_frame_length_ = 0;
-    tx_frame_crc_  = HDLC_CRC_INIT_VALUE;
-    tx_frame_buffer_[tx_frame_length_++] = HDLC_FRAME_BOUNDRY_FLAG;
-    for (size_t i = 0; i < size; i++) {
-        tx_frame_crc_ = crc_update(tx_frame_crc_, data[i]);
-        encode_byte(data[i]);
-    }
-    encode_byte((tx_frame_crc_ & 0xFF));
-    encode_byte(((tx_frame_crc_ >> 8) & 0xFF));
-    tx_frame_buffer_[tx_frame_length_++] = HDLC_FRAME_BOUNDRY_FLAG;
-
-    if (::write(serial_port_, tx_frame_buffer_, tx_frame_length_) == -1) {
-        fprintf(stderr, "Failed to write serial port data: %s (%d)\n", strerror(errno), errno);
-        return return_type::ERROR;
+    // write to serial port
+    ssize_t length = write(serial_port_, data, strlen(data));
+    if (length == -1)
+    {
+        printf("Error writing to serial port\n");
     }
 
     return return_type::SUCCESS;
