@@ -38,11 +38,6 @@ namespace debict
                 return_type write_frame(char* data);
                 bool is_open() const;
 
-            protected:
-                void encode_byte(uint8_t data);
-                void decode_byte(uint8_t data, std::vector<SerialHdlcFrame>& frames);
-                uint16_t crc_update(uint16_t crc, uint8_t data);
-
             private:
                 int serial_port_;
                 uint8_t rx_buffer_[MECANUMBOT_SERIAL_BUFFER_MAX_SIZE];
