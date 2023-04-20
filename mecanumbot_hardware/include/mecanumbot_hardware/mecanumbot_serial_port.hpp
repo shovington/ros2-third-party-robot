@@ -34,7 +34,7 @@ namespace debict
                 
                 return_type open(const std::string & port_name);
                 return_type close();
-                return_type read_frames(std::vector<SerialHdlcFrame>& frames);
+                return_type read_frames(char* data);
                 return_type write_frame(const uint8_t* data, size_t size);
                 bool is_open() const;
 

@@ -7,6 +7,10 @@
 #include <unistd.h>
 #include <rclcpp/rclcpp.hpp>
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 #include "mecanumbot_hardware/mecanumbot_serial_port.hpp"
 
 #define HDLC_FRAME_BOUNDRY_FLAG     0x7E
@@ -87,12 +91,11 @@ return_type MecanumbotSerialPort::close()
     return return_type::SUCCESS;
 }
 
-return_type MecanumbotSerialPort::read_frames(std::string data)
+return_type MecanumbotSerialPort::read_frames(char* buffer)
 {
-    char buffer[1024];
+    // char buffer[1024];
     int buffer_index = 0;
-    char last_char = NULL;
-    ssize_t length = 0;
+    char last_char;
     
     while(last_char != '\n')
     {
@@ -113,10 +116,9 @@ return_type MecanumbotSerialPort::read_frames(std::string data)
         last_char = buffer[buffer_index - 1];
 
     }
-    printf("Global Buffer read %d bytes\n", buffer_index-1);
-    printf("%s\n", buffer); 
 
-
+    // remrove carriage return and line feed
+    buffer[buffer_index - 2] = '\0';
     return return_type::SUCCESS;
 }
 

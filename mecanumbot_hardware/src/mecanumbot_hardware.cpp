@@ -5,6 +5,9 @@
 #include <rclcpp_lifecycle/state.hpp>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 #include "mecanumbot_hardware/mecanumbot_hardware.hpp"
 
@@ -133,25 +136,25 @@ hardware_interface::CallbackReturn MecanumbotHardware::on_deactivate(const rclcp
 hardware_interface::return_type MecanumbotHardware::read(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
 
-    // We currently have an ack response, so read the frames
-    std::vector<SerialHdlcFrame> frames;
-    serial_port_->read_frames(frames);
+    // We currently have an ack response, so readread_frames the frames
+    char message[1024];
+    serial_port_->read_frames(message);
     
-    // for (size_t i = 0; i < frames.size(); i++) {
-    //     char buff[100];
-    //     int offset = 0;
-    //     for (size_t l = 0; l < frames[i].length; l++) {
-    //         sprintf(&buff[offset], "%02X ", frames[i].data[l]);
-    //         offset += 3;
-    //     }
-    //     // RCLCPP_INFO(rclcpp::get_logger("MecanumbotHardware"), "Frame received: %s", buff);
-    // }
-    
-
-    for (size_t i = 0; i < info_.joints.size(); i++) {
-        // RCLCPP_INFO(rclcpp::get_logger("MecanumbotHardware"), "Got position %.5f, velocity %.5f for joint %d!", velocity_states_[i], i);
+    try {
+        auto json = json::parse(message);
+        // iterate over the json object
+        for (json::iterator it = json.begin(); it != json.end(); ++it) {
+            // print key and value
+            std::cout << it.key() << " : " << it.value() << "\n";
+        }
+        // Put real velocity in there only for debuging
+        velocity_states_[0] = json.at("time");
+    } catch (json::parse_error& e) {
+        // output exception information
+        std::cout << "message: " << e.what() << '\n'
+                  << "exception id: " << e.id << std::endl;
     }
-    // position_states_[0] = 1.1f;
+
     return hardware_interface::return_type::OK;
 }
 
